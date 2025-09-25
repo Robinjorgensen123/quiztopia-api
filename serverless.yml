@@ -61,18 +61,18 @@ custom:
 functions:
   # Authorizer
   authorizer:
-    handler: src/auth/authorizer/handler.authorize
+    handler: src/auth/authorizer.mjs
 
   # Auth
   signup:
-    handler: src/auth/signup/handler.main
+    handler: src/auth/signup.mjs
     events:
       - httpApi:
           path: /auth/signup
           method: post
 
   login:
-    handler: src/auth/login/handler.main
+    handler: src/auth/login.mjs
     events:
       - httpApi:
           path: /auth/login
@@ -80,14 +80,14 @@ functions:
 
   # Quizzes
   listQuizzes:
-    handler: src/quizzes/list/handler.main
+    handler: src/quizzes/listQuizzes.mjs
     events:
       - httpApi:
           path: /quizzes
           method: get
 
   getQuiz:
-    handler: src/quizzes/get/handler.main
+    handler: src/quizzes/getQuiz.mjs
     events:
       - httpApi:
           path: /quizzes/{quizId}
@@ -96,7 +96,7 @@ functions:
             name: quizAuth
 
   createQuiz:
-    handler: src/quizzes/create/handler.main
+    handler: src/quizzes/createQuiz.mjs
     events:
       - httpApi:
           path: /quizzes
@@ -105,7 +105,7 @@ functions:
             name: quizAuth
 
   deleteQuiz:
-    handler: src/quizzes/delete/handler.main
+    handler: src/quizzes/deleteQuiz.mjs
     events:
       - httpApi:
           path: /quizzes/{quizId}
@@ -115,7 +115,7 @@ functions:
 
   # Questions
   addQuestion:
-    handler: src/questions/add/handler.main
+    handler: src/questions/addQuestion.mjs
     events:
       - httpApi:
           path: /quizzes/{quizId}/questions
@@ -125,7 +125,7 @@ functions:
 
   # Leaderboard (VG)
   submitScore:
-    handler: src/leaderboard/submit/handler.main
+    handler: src/leaderboard/submitScore.mjs
     events:
       - httpApi:
           path: /quizzes/{quizId}/scores
@@ -134,7 +134,7 @@ functions:
             name: quizAuth
 
   getLeaderboard:
-    handler: src/leaderboard/get/handler.main
+    handler: src/leaderboard/getLeaderBoard.mjs
     events:
       - httpApi:
           path: /quizzes/{quizId}/leaderboard
@@ -164,6 +164,10 @@ resources:
             AttributeType: S
           - AttributeName: GSI3SK
             AttributeType: N
+          - AttributeName: GSI4PK
+            AttributeType: S
+          - AttributeName: GSI4SK
+            AttributeType: S
         KeySchema:
           - AttributeName: PK
             KeyType: HASH
@@ -194,3 +198,12 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
+          - IndexName: GSIAllQuizzes
+            KeySchema:
+              - AttributeName: GSI4PK
+                KeyType: HASH
+              - AttributeName: GSI4SK
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+            
