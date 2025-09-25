@@ -1,0 +1,196 @@
+org: js24robin
+service: quiztopia
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: eu-north-1
+  stage: prod
+
+  environment:
+    STAGE: ${self:provider.stage}
+    REGION: ${self:provider.region}
+    TABLE_NAME: Quiztopia
+    JWT_SECRET: ${env:JWT_SECRET, 'change-me-in-prod'}
+    JWT_EXPIRES_IN: 10h
+
+  httpApi:
+    cors: true
+    authorizers:
+      quizAuth:
+        type: request
+        functionName: authorizer
+        identitySource:
+          - $request.header.Authorization
+        resultTtlInSeconds: 0
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:DeleteItem
+            - dynamodb:Query
+          Resource:
+            - { "Fn::GetAtt": [ QuiztopiaTable, "Arn" ] }
+            - Fn::Join:
+                - ""
+                - - { "Fn::GetAtt": [ QuiztopiaTable, "Arn" ] }
+                  - "/index/*"
+        - Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+          Resource: "*"
+
+plugins:
+  - serverless-esbuild
+
+custom:
+  esbuild:
+    bundle: true
+    target: node20
+    platform: node
+    sourcemap: true
+    external:
+      - '@aws-sdk/*'
+
+functions:
+  # Authorizer
+  authorizer:
+    handler: src/auth/authorizer/handler.authorize
+
+  # Auth
+  signup:
+    handler: src/auth/signup/handler.main
+    events:
+      - httpApi:
+          path: /auth/signup
+          method: post
+
+  login:
+    handler: src/auth/login/handler.main
+    events:
+      - httpApi:
+          path: /auth/login
+          method: post
+
+  # Quizzes
+  listQuizzes:
+    handler: src/quizzes/list/handler.main
+    events:
+      - httpApi:
+          path: /quizzes
+          method: get
+
+  getQuiz:
+    handler: src/quizzes/get/handler.main
+    events:
+      - httpApi:
+          path: /quizzes/{quizId}
+          method: get
+          authorizer:
+            name: quizAuth
+
+  createQuiz:
+    handler: src/quizzes/create/handler.main
+    events:
+      - httpApi:
+          path: /quizzes
+          method: post
+          authorizer:
+            name: quizAuth
+
+  deleteQuiz:
+    handler: src/quizzes/delete/handler.main
+    events:
+      - httpApi:
+          path: /quizzes/{quizId}
+          method: delete
+          authorizer:
+            name: quizAuth
+
+  # Questions
+  addQuestion:
+    handler: src/questions/add/handler.main
+    events:
+      - httpApi:
+          path: /quizzes/{quizId}/questions
+          method: post
+          authorizer:
+            name: quizAuth
+
+  # Leaderboard (VG)
+  submitScore:
+    handler: src/leaderboard/submit/handler.main
+    events:
+      - httpApi:
+          path: /quizzes/{quizId}/scores
+          method: post
+          authorizer:
+            name: quizAuth
+
+  getLeaderboard:
+    handler: src/leaderboard/get/handler.main
+    events:
+      - httpApi:
+          path: /quizzes/{quizId}/leaderboard
+          method: get
+
+resources:
+  Resources:
+    QuiztopiaTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Quiztopia
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: PK
+            AttributeType: S
+          - AttributeName: SK
+            AttributeType: S
+          - AttributeName: GSI1PK
+            AttributeType: S
+          - AttributeName: GSI1SK
+            AttributeType: S
+          - AttributeName: GSI2PK
+            AttributeType: S
+          - AttributeName: GSI2SK
+            AttributeType: S
+          - AttributeName: GSI3PK
+            AttributeType: S
+          - AttributeName: GSI3SK
+            AttributeType: N
+        KeySchema:
+          - AttributeName: PK
+            KeyType: HASH
+          - AttributeName: SK
+            KeyType: RANGE
+        GlobalSecondaryIndexes:
+          - IndexName: GSIEmail
+            KeySchema:
+              - AttributeName: GSI1PK
+                KeyType: HASH
+              - AttributeName: GSI1SK
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: GSIUserQuizzes
+            KeySchema:
+              - AttributeName: GSI2PK
+                KeyType: HASH
+              - AttributeName: GSI2SK
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: GSILeaderboard
+            KeySchema:
+              - AttributeName: GSI3PK
+                KeyType: HASH
+              - AttributeName: GSI3SK
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
