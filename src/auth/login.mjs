@@ -22,13 +22,15 @@ export const handler = async (event) => {
     if (!TABLE_NAME || !JWT_SECRET)
       return json(500, { message: "Felkonfigurerad server" });
 
+    const emailFormat = String(email).trim().toLowerCase()
+
     const res = await ddb.send(
       new QueryCommand({
         TableName: TABLE_NAME,
         IndexName: "GSIEmail",
         KeyConditionExpression: "GSI1PK = :pk AND GSI1SK = :sk",
         ExpressionAttributeValues: {
-          ":pk": `EMAIL#${email}`,
+          ":pk": `EMAIL#${emailFormat}`,
           ":sk": "PROFILE",
         },
         Limit: 1,
@@ -55,7 +57,7 @@ export const handler = async (event) => {
       token,
       user: {
         userId: String(userId),
-        email: user.email,
+        email: user.email ?? emailFormat,
         name: user.name ?? null,
       },
     });
