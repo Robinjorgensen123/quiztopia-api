@@ -16,13 +16,13 @@ const parse = (body) =>
 
 export const handler = async (event) => {
   try {
-    const { email, password, userName } = parse(event?.body);
+    const { email, password, username } = parse(event?.body);
     if (!email || !password)
       return json(400, { message: "email & password krävs" });
     if (!TABLE_NAME) return json(500, { message: "Felkonfigurerad server" });
 
     const emailFormat = email.trim().toLowerCase();
-    const isEmail = version => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    const isEmail = version => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(version);
     if(!isEmail(emailFormat)) return json(400, { message: "ogiltig epost"});
     if(String(password).length < 8) return json(400, { message: "password måste minst vara 8 tecken"})
 
@@ -54,7 +54,7 @@ export const handler = async (event) => {
           SK: "PROFILE",
           userId,
           email: emailFormat,
-          name: userName ?? null,
+          name: username ?? null,
           passwordHash,
           createdAt: now,
           // GSIEmail
@@ -68,7 +68,7 @@ export const handler = async (event) => {
     return json(201, {
       userId,
       email: emailFormat,
-      name: userName ?? null,
+      name: username ?? null,
       createdAt: now,
     });
   } catch (err) {

@@ -1,5 +1,5 @@
 import ddb from "../db/client.mjs";
-import { QueryCommand } from "@aws-sdk/client-dynamodb";
+import { QueryCommand } from "@aws-sdk/lib-dynamodb";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -14,9 +14,6 @@ const json = (code, data) => ({
 const parse = (body) =>
   typeof body === "string" ? JSON.parse(body || "{}") : body || {};
 
-const isEmail = (v) => 
-    typeof v === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-
 export const handler = async (event) => {
   try {
     const { email, password } = parse(event?.body);
@@ -24,13 +21,6 @@ export const handler = async (event) => {
       return json(400, { message: "email och password krävs" });
     if (!TABLE_NAME || !JWT_SECRET)
       return json(500, { message: "Felkonfigurerad server" });
-    const emailCheck = String(email).trim().toLowerCase()
-    if(!isEmail(emailCheck)) {
-        return json(400, { message: "ogiltig epost" })
-    }
-    if (String(password).length < 8) {
-        return json(400, { message: "password måste vara minst 8 tecken" })
-    }
 
     const res = await ddb.send(
       new QueryCommand({
@@ -38,17 +28,18 @@ export const handler = async (event) => {
         IndexName: "GSIEmail",
         KeyConditionExpression: "GSI1PK = :pk AND GSI1SK = :sk",
         ExpressionAttributeValues: {
-          pk: `EMAIL#${email}`,
-          sk: "PROFILE",
+          ":pk": `EMAIL#${email}`,
+          ":sk": "PROFILE",
         },
         Limit: 1,
       })
     );
 
     const user = res.Items?.[0];
-    if (!user) return json(401, { message: "Fel inloggningsuppgifter" });
+    if (!user || !user.passwordHash)
+      return json(401, { message: "Fel inloggningsuppgifter" });
 
-    const ok = await bcrypt.compare(password, user.passwordHash);
+    const ok = await bcrypt.compare(String(password), user.passwordHash);
     if (!ok) return json(401, { message: "Fel inloggningsuppgiter" });
 
     const userId =
