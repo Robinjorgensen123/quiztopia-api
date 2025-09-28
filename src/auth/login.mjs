@@ -2,67 +2,61 @@ import ddb from "../db/client.mjs";
 import { QueryCommand } from "@aws-sdk/lib-dynamodb";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { loginEmailSchema } from "../utils/schemas.mjs";
+import { withHttp } from "../utils/middy.mjs";
+import { withSchema } from "../utils/validator.mjs";
+import createError from "http-errors";
 
 const { TABLE_NAME, JWT_SECRET, JWT_EXPIRES_IN = "10h" } = process.env;
 
-const json = (code, data) => ({
-  statusCode: code,
-  headers: { "content-type": "application/json" },
-  body: JSON.stringify(data),
-});
-
-const parse = (body) =>
-  typeof body === "string" ? JSON.parse(body || "{}") : body || {};
-
 export const loginHandler = async (event) => {
-  try {
-    const { email, password } = parse(event?.body);
-    if (!email || !password)
-      return json(400, { message: "email och password krävs" });
-    if (!TABLE_NAME || !JWT_SECRET)
-      return json(500, { message: "Felkonfigurerad server" });
+  const { email, password } = event.body;
 
-    const emailFormat = String(email).trim().toLowerCase()
+  if (!TABLE_NAME || !JWT_SECRET)
+    throw createError(500, "Felkonfigurerad server");
 
-    const res = await ddb.send(
-      new QueryCommand({
-        TableName: TABLE_NAME,
-        IndexName: "GSIEmail",
-        KeyConditionExpression: "GSI1PK = :pk AND GSI1SK = :sk",
-        ExpressionAttributeValues: {
-          ":pk": `EMAIL#${emailFormat}`,
-          ":sk": "PROFILE",
-        },
-        Limit: 1,
-      })
-    );
+  const emailFormat = String(email).trim().toLowerCase();
 
-    const user = res.Items?.[0];
-    if (!user || !user.passwordHash)
-      return json(401, { message: "Fel inloggningsuppgifter" });
+  const res = await ddb.send(
+    new QueryCommand({
+      TableName: TABLE_NAME,
+      IndexName: "GSIEmail",
+      KeyConditionExpression: "GSI1PK = :pk AND GSI1SK = :sk",
+      ExpressionAttributeValues: {
+        ":pk": `EMAIL#${emailFormat}`,
+        ":sk": "PROFILE",
+      },
+      Limit: 1,
+    })
+  );
 
-    const ok = await bcrypt.compare(String(password), user.passwordHash);
-    if (!ok) return json(401, { message: "Fel inloggningsuppgiter" });
+  const user = res.Items?.[0];
+  if (!user || !user.passwordHash)
+    throw createError(401, "fel inloggningsuppgifter");
 
-    const userId =
-      user.userId ??
-      (user.PK?.startsWith("USER#") ? user.PK.slice(5) : user.PK);
+  const ok = await bcrypt.compare(String(password), user.passwordHash);
+  if (!ok) throw createError(401, "fel inloggningsuppgifter");
 
-    const token = jwt.sign({ sub: String(userId) }, JWT_SECRET, {
-      algorithm: "HS256",
-      expiresIn: JWT_EXPIRES_IN,
-    });
+  const userId =
+    user.userId ?? (user.PK?.startsWith("USER#") ? user.PK.slice(5) : user.PK);
 
-    return json(200, {
+  const token = jwt.sign({ sub: String(userId) }, JWT_SECRET, {
+    algorithm: "HS256",
+    expiresIn: JWT_EXPIRES_IN,
+  });
+
+  return {
+    statusCode: 200,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
       token,
       user: {
         userId: String(userId),
         email: user.email ?? emailFormat,
-        name: user.name ?? null,
+        name: user.name ?? user.username ?? null,
       },
-    });
-  } catch (err) {
-    console.error("login error", err);
-    return json(500, { message: "Något gick fel" });
-  }
+    }),
+  };
 };
+
+export const handler = withHttp(loginHandler).use(withSchema(loginEmailSchema));
