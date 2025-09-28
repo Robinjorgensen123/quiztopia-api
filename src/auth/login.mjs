@@ -14,7 +14,7 @@ const json = (code, data) => ({
 const parse = (body) =>
   typeof body === "string" ? JSON.parse(body || "{}") : body || {};
 
-export const handler = async (event) => {
+export const loginHandler = async (event) => {
   try {
     const { email, password } = parse(event?.body);
     if (!email || !password)

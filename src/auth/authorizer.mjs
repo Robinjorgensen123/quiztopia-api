@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 
 const { JWT_SECRET } = process.env;
 
-export const handler = async (event) => {
+export const authHandler = async (event) => {
   try {
     if (!JWT_SECRET) {
       console.error("JWT_SECRET saknas i env");
