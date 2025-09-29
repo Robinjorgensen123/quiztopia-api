@@ -32,3 +32,32 @@ export const loginEmailSchema = {
     },
   },
 };
+
+export const createQuizSchema = {
+  type: "object",
+  properties: {
+    body: {
+      type: "object",
+      required: ["title"],
+      additionalProperties: false,
+      properties: {
+        title: { type: "string", minLength: 1, maxLength: 120 },
+        description: { type: "string", maxLength: 500 },
+      },
+    },
+  },
+};
+
+
+export const getQuizSchema = {
+    type: "object",
+    properties: {
+        pathParameters: {
+            type: "object",
+            required: ["quizId"],
+            properties: {
+                quizId: { type: "string", minLength: 1 }
+            }
+        }
+    }
+}
