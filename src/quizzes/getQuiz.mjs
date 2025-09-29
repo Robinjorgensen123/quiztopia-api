@@ -2,52 +2,51 @@ import ddb from "../db/client.mjs";
 import { QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { withHttp } from "../utils/middy.mjs";
 import { withSchema } from "../utils/validator.mjs";
-import { getQuizSchema } from "../utils/schemas.mjs"
+import { getQuizSchema } from "../utils/schemas.mjs";
 import createError from "http-errors";
 
+const { TABLE_NAME } = process.env;
 
-const { TABLE_NAME } = process.env
+const getQuizHandler = async (event) => {
+  const quizId = event?.pathParameters?.quizId;
+  if (!quizId) throw createError(400, "quizId krävs");
 
-const getQuizHandler =  async (event) => {
+  const res = await ddb.send(
+    new QueryCommand({
+      TableName: TABLE_NAME,
+      KeyConditionExpression: "PK = :pk",
+      ExpressionAttributeValues: {
+        ":pk": `QUIZ#${quizId}`,
+      },
+    })
+  );
 
-    const quizId = event?.pathParameters?.quizId
-    if(!quizId) throw createError(400, "quizId krävs")
+  const items = res.Items ?? [];
+  if (!items.length) throw createError(404, "quizet hittades ej");
 
-        const res = await ddb.send(new QueryCommand({
-            TableName: TABLE_NAME,
-            KeyConditionExpression: "PK = :pk",
-            ExpressionAttributeValues: {
-                ":pk": `QUIZ#${quizId}`,
-            }
-        }))
+  const meta = items.find((it) => it.SK === "METADATA");
+  if (!meta) throw createError(404, "quiz saknar metadata");
 
-        const items = res.Items ?? [];
-        if(!items.length) throw createError(404, "quizet hittades ej")
+  const questions = items
+    .filter((it) => it.SK.startsWith?.("QUESTION#"))
+    .map((q) => ({
+      questionId: q.questionId ?? q.SK.replace("QUESTION#", ""),
+      question: q.question,
+      points: q.points ?? 0,
+      createdAt: q.createdAt ?? null,
+    }));
+  return {
+    statusCode: 200,
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      quizId: meta.quizId,
+      title: meta.title,
+      description: meta.description ?? null,
+      ownerUserId: meta.ownerUserId,
+      createdAt: meta.createdAt,
+      questions,
+    }),
+  };
+};
 
-        const meta = items.find((it) => it.SK === "METADATA")
-        if(!meta) throw createError(404, "quiz saknar metadata")
-
-        const questions = items
-        .filter((it) => it.SK.startsWith?.("QUESTION#"))
-        .map((q) => ({
-            questionId: q.questionId ?? q.SK.replace("QUESTION#", ""),
-            question: q.question,
-            answer: q.answer, // detta behöver vi kontrollera hur vi ska göra med svar
-            points: q.points ?? 0,
-            createdAt: q.createdAt ?? null,
-        }))
-        return {
-            statusCode: 200,
-            headers: { "content-type": "application/json" },
-            body: JSON.stringify({
-                quizId: meta.quizId,
-                title: meta.title,
-                description: meta.description ?? null,
-                ownerUserId: meta.ownerUserId,
-                createdAt: meta.createdAt,
-                questions,
-            }),
-        }
-}
-
-export const handler = withHttp(getQuizHandler).use(withSchema(getQuizSchema))
+export const handler = withHttp(getQuizHandler).use(withSchema(getQuizSchema));
