@@ -57,7 +57,21 @@ export const getQuizSchema = {
             required: ["quizId"],
             properties: {
                 quizId: { type: "string", minLength: 1 }
-            }
-        }
-    }
+            },
+        },
+    },
+}
+
+export const listQuizzesSchema = {
+    type:"object",
+    properties: {
+        queryStringParameters: {
+            type: "object",
+            additionalProperties: true,
+            properties: {
+                limit: { type: "string" },
+                nextToken: { type: "string" },
+            },
+        },
+    },
 }

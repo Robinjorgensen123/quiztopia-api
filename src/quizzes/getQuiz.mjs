@@ -9,6 +9,7 @@ const { TABLE_NAME } = process.env;
 
 const getQuizHandler = async (event) => {
   const quizId = event?.pathParameters?.quizId;
+  if (!TABLE_NAME) throw createError(500, "felkonfigurerad server");
   if (!quizId) throw createError(400, "quizId krävs");
 
   const res = await ddb.send(
