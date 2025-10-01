@@ -48,30 +48,82 @@ export const createQuizSchema = {
   },
 };
 
-
 export const getQuizSchema = {
-    type: "object",
-    properties: {
-        pathParameters: {
-            type: "object",
-            required: ["quizId"],
-            properties: {
-                quizId: { type: "string", minLength: 1 }
-            },
-        },
+  type: "object",
+  properties: {
+    pathParameters: {
+      type: "object",
+      required: ["quizId"],
+      properties: {
+        quizId: { type: "string", minLength: 1 },
+      },
     },
-}
+  },
+};
 
 export const listQuizzesSchema = {
-    type:"object",
-    properties: {
-        queryStringParameters: {
-            type: "object",
-            additionalProperties: true,
-            properties: {
-                limit: { type: "string" },
-                nextToken: { type: "string" },
-            },
-        },
+  type: "object",
+  properties: {
+    queryStringParameters: {
+      type: "object",
+      additionalProperties: true,
+      properties: {
+        limit: { type: "string" },
+        nextToken: { type: "string" },
+      },
     },
-}
+  },
+};
+
+export const addQuestionSchema = {
+  type: "object",
+  properties: {
+    pathParameters: {
+      type: "object",
+      required: ["quizId"],
+      properties: { quizId: { type: "string", minLength: 1 } },
+    },
+    body: {
+      type: "object",
+      requred: ["question", "answer"],
+      additionalProperties: false,
+      properties: {
+        question: { type: "string", minLength: 1, maxLength: 300 },
+        answer: { type: "string", minLength: 1, maxLength: 300 },
+        points: { type: "integer", minimum: 0 },
+      },
+    },
+  },
+};
+
+export const submitScoreSchema = {
+  type: "object",
+  properties: {
+    pathParameters: {
+      type: "object",
+      required: ["quizId"],
+      properties: {
+        quizId: { type: "string", minLength: 1 },
+      },
+    },
+  },
+  body: {
+    type: "object",
+    required: ["answers"],
+    additionalProperties: false,
+    properties: {
+      answers: {
+        type: "array",
+        minItems: 1,
+        items: {
+          type: "object",
+          required: ["questionId", "value"],
+          additionalProperties: true,
+          properties: {
+            questionId: { type: ["string", "number", "boolean"] },
+          },
+        },
+      },
+    },
+  },
+};

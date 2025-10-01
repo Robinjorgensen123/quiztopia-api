@@ -5,7 +5,7 @@ import createError from "http-errors"
 import { withHttp } from "../utils/middy.mjs";
 import { withSchema } from "../utils/validator.mjs";
 import { addQuestionSchema } from "../utils/schemas.mjs"
-import { create } from "node:domain";
+
 
 
 const { TABLE_NAME } = process.env
@@ -42,7 +42,27 @@ const addQuestionHandler = async (event) => {
                 SK: `QUESTION#${questionId}`,
                 quizId,
                 questionId,
-            }
+                question: String(question),
+                answer: String(answer),
+                points: Number(points) || 0,
+                createdAt: now,
+            },
+            ConditionExpression: "attribute_not_exists(PK) AND attribute_not_exists(SK)",
         }))
+        return {
+            statusCode: 201,
+            headers: { "content-type" : "application/json" },
+            body: JSON.stringify({
+                quizId,
+                question: {
+                    questionId,
+                    question: String(question),
+                    points: Number(points) || 0,
+                    createdAt: now,
+                },
+            }),
+        }
 
 }
+
+export const handler = withHttp(addQuestionHandler).use(withSchema(addQuestionSchema))
