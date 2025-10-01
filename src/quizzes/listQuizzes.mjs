@@ -4,20 +4,11 @@ import { withHttp } from "../utils/middy.mjs";
 import { withSchema } from "../utils/validator.mjs";
 import createError from "http-errors";
 import { listQuizzesSchema } from "../utils/schemas.mjs";
+import { encodeToken, decodeToken } from "../utils/pagination.mjs";
+
 
 const { TABLE_NAME } = process.env
 
-
-// base64 helpers för paginering
-const encodeToken = (key) =>
-    key ? Buffer.from(JSON.stringify(key), "utf8").toString("base64") : null;
-
-const decodeToken = (token) => {
-    if (!token) return undefined;
-    try { return JSON.parse(Buffer.from(token, "base64").toString("utf8")); }
-    catch { return undefined }  
-}
- 
 
 const listQuizzesHandler = async (event) => {
     if(!TABLE_NAME) throw createError(500, "server fel")
