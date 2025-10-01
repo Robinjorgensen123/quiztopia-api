@@ -54,18 +54,18 @@ provider:
 functions:
   # Authorizer
   authorizer:
-    handler: src/auth/authorizer.mjs
+    handler: src/auth/authorizer.handler
 
   # Auth
   signup:
-    handler: src/auth/signup.mjs
+    handler: src/auth/signup.handler
     events:
       - httpApi:
           path: /auth/signup
           method: post
 
   login:
-    handler: src/auth/login.mjs
+    handler: src/auth/login.handler
     events:
       - httpApi:
           path: /auth/login
@@ -73,14 +73,14 @@ functions:
 
   # Quizzes
   listQuizzes:
-    handler: src/quizzes/listQuizzes.mjs
+    handler: src/quizzes/listQuizzes.handler
     events:
       - httpApi:
           path: /quizzes
           method: get
 
   getQuiz:
-    handler: src/quizzes/getQuiz.mjs
+    handler: src/quizzes/getQuiz.handler
     events:
       - httpApi:
           path: /quizzes/{quizId}
@@ -89,7 +89,7 @@ functions:
             name: quizAuth
 
   createQuiz:
-    handler: src/quizzes/createQuiz.mjs
+    handler: src/quizzes/createQuiz.handler
     events:
       - httpApi:
           path: /quizzes
@@ -98,7 +98,7 @@ functions:
             name: quizAuth
 
   deleteQuiz:
-    handler: src/quizzes/deleteQuiz.mjs
+    handler: src/quizzes/deleteQuiz.handler
     events:
       - httpApi:
           path: /quizzes/{quizId}
@@ -108,7 +108,7 @@ functions:
 
   # Questions
   addQuestion:
-    handler: src/questions/addQuestion.mjs
+    handler: src/questions/addQuestion.handler
     events:
       - httpApi:
           path: /quizzes/{quizId}/questions
@@ -118,7 +118,7 @@ functions:
 
   # Leaderboard (VG)
   submitScore:
-    handler: src/leaderboard/submitScore.mjs
+    handler: src/leaderboard/submitScore.handler
     events:
       - httpApi:
           path: /quizzes/{quizId}/scores
@@ -127,7 +127,7 @@ functions:
             name: quizAuth
 
   getLeaderboard:
-    handler: src/leaderboard/getLeaderBoard.mjs
+    handler: src/leaderboard/getLeaderBoard.handler
     events:
       - httpApi:
           path: /quizzes/{quizId}/leaderboard

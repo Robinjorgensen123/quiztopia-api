@@ -41,16 +41,24 @@ export const loginHandler = async (event) => {
   const userId =
     user.userId ?? (user.PK?.startsWith("USER#") ? user.PK.slice(5) : user.PK);
 
-  const token = jwt.sign({ sub: String(userId) }, JWT_SECRET, {
-    algorithm: "HS256",
-    expiresIn: JWT_EXPIRES_IN,
-  });
+   const token = jwt.sign(
+    {
+        email: user.email,
+        username: user.username,
+    },
+    JWT_SECRET,
+    {
+        algorithm: "HS256",
+        expiresIn: JWT_EXPIRES_IN || "10h",
+        subject: user.userId,
+    }
+   )
 
   return {
     statusCode: 200,
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
-      token,
+      accessToken: token,
       user: {
         userId: String(userId),
         email: user.email ?? emailFormat,
