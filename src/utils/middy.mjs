@@ -8,3 +8,5 @@ export const withHttp = (handler) =>
     .use(httpJsonBodyParser())
     .use(httpEventNormalizer())
     .use(httpErrorHandler());
+
+    

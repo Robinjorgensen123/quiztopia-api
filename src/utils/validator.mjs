@@ -1,8 +1,15 @@
-import validator from "@middy/validator"
-import Ajv from "ajv"
+import validator from "@middy/validator";
+import { transpileSchema } from "@middy/validator/transpile";
 import addFormats from "ajv-formats"
 
-const ajv = new Ajv({ coerceTypes: true, allErrors: true })
-addFormats(ajv)
-
-export const withSchema = (schema) => validator({ inputSchema: schema, ajv })
+export const withSchema = (eventSchema) => {
+  return validator({
+    eventSchema: transpileSchema(eventSchema),
+    ajvOptions: {
+        allErrors: true,
+        removeAdditional: false,
+        coerceTypes: true,
+    },
+    ajvPlugins: [addFormats] // email, uri, date-time, etc.
+  });
+};

@@ -1,5 +1,6 @@
 export const signupSchema = {
   type: "object",
+  required: ["body"],
   properties: {
     body: {
       type: "object",
