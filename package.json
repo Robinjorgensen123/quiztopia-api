@@ -19,8 +19,12 @@
     "@middy/http-json-body-parser": "^6.4.5",
     "@middy/validator": "^6.4.5",
     "bcryptjs": "^3.0.2",
+    "dotenv": "^17.2.3",
     "http-errors": "^2.0.0",
     "jsonwebtoken": "^9.0.2",
     "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "serverless-esbuild": "^1.55.1"
   }
 }

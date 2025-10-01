@@ -1,12 +1,15 @@
 org: js24robin
 service: quiztopia
 
+plugins:
+  - serverless-dotenv-plugin
+
 provider:
   name: aws
   runtime: nodejs20.x
   region: eu-north-1
   stage: prod
-  
+
   environment:
     STAGE: ${self:provider.stage}
     REGION: ${self:provider.region}
@@ -46,17 +49,7 @@ provider:
             - logs:PutLogEvents
           Resource: "*"
 
-plugins:
-  - serverless-esbuild
 
-custom:
-  esbuild:
-    bundle: true
-    target: node20
-    platform: node
-    sourcemap: true
-    external:
-      - '@aws-sdk/*'
 
 functions:
   # Authorizer
