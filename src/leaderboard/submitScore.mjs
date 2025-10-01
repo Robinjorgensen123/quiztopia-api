@@ -1,11 +1,15 @@
 import ddb from "../db/client.mjs"
 import { QueryCommand, PutCommand, GetCommand } from "@aws-sdk/lib-dynamodb"
-import createError from "http-errors"
+import httpErrorHandler from "@middy/http-error-handler"
 import { withHttp } from "../utils/middy.mjs"
 import { withSchema } from "../utils/validator.mjs"
 import { submitScoreSchema } from "../utils/schemas.mjs"
+import createError from "http-errors"
 
 const { TABLE_NAME } = process.env
+
+const normalize = (v) => String(v ?? "").trim().toLowerCase().replace(/\s+/g, " ");
+
 
 const submitScoreHandler = async (event) => {
     if(!TABLE_NAME) throw createError(500, "serverfel")
@@ -29,7 +33,7 @@ if(!quizId) throw createError(400, "quizId krävs")
 
     const qRes = await ddb.send(new QueryCommand({
         TableName: TABLE_NAME,
-        KeyConditionExpression: "PK = :pk AND begins_with(SK, : sk)",
+        KeyConditionExpression: "PK = :pk AND begins_with(SK, :sk)",
         ExpressionAttributeValues: {
             ":pk" : `QUIZ#${quizId}`,
             ":sk" : "QUESTION#",
@@ -79,7 +83,7 @@ if(!quizId) throw createError(400, "quizId krävs")
 
             const awarded = isCorrect ? info.points : 0;
             totalPoints += awarded
-            results.push({ questionId: key, correct, isCorrect, awarded })
+            results.push({ questionId: key, correct: isCorrect, awarded })
         }
 
         const submittedAt = new Date().toISOString()
@@ -111,4 +115,4 @@ if(!quizId) throw createError(400, "quizId krävs")
         }
 }
 
-export const handker = withHttp(submitScoreHandler).use(withSchema(submitScoreSchema))
+export const handler = withHttp(submitScoreHandler).use(withSchema(submitScoreSchema))

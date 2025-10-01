@@ -2,9 +2,9 @@ import ddb from "../db/client.mjs";
 import { QueryCommand } from "@aws-sdk/lib-dynamodb";
 import { withHttp } from "../utils/middy.mjs";
 import { withSchema } from "../utils/validator.mjs";
-import createError from "http-errors";
 import { listQuizzesSchema } from "../utils/schemas.mjs";
 import { encodeToken, decodeToken } from "../utils/pagination.mjs";
+import createError from "http-errors"
 
 
 const { TABLE_NAME } = process.env

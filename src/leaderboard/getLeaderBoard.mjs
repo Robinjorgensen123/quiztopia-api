@@ -1,15 +1,18 @@
 import ddb from "../db/client.mjs";
 import { QueryCommand } from "@aws-sdk/lib-dynamodb";
-import createError from "http-errors";
+import httpErrorHandler from "@middy/http-error-handler"
 import { withHttp } from "../utils/middy.mjs";
 import { withSchema } from "../utils/validator.mjs";
 import { getLeaderboardSchema } from "../utils/schemas.mjs";
 import { encodeToken, decodeToken } from "../utils/pagination.mjs";
+import createError from "http-errors"
 
 const { TABLE_NAME } = process.env;
 
 const getLeaderboardHandler = async (event) => {
-  if (!TABLE_NAME) throw createError(500, "felkonfigurerad server");
+    const quizId = event?.pathParameters?.quizId
+    if(!quizId) throw createError(400, "quizId krävs")
+    if(!TABLE_NAME) throw createError(500, "felkonfigurerad server");
 
   const qs = event.queryStringParameters ?? {};
   const limit = Math.min(
@@ -47,6 +50,4 @@ const getLeaderboardHandler = async (event) => {
   };
 };
 
-export const handler = withHttp(getLeaderboardHandler).use(
-  withSchema(getLeaderboardSchema)
-);
+export const handler = withHttp(getLeaderboardHandler).use(withSchema(getLeaderboardSchema))

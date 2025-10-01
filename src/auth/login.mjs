@@ -5,7 +5,8 @@ import jwt from "jsonwebtoken";
 import { loginEmailSchema } from "../utils/schemas.mjs";
 import { withHttp } from "../utils/middy.mjs";
 import { withSchema } from "../utils/validator.mjs";
-import createError from "http-errors";
+import httpErrorHandler from "@middy/http-error-handler";
+import createError from "http-errors"
 
 const { TABLE_NAME, JWT_SECRET, JWT_EXPIRES_IN = "10h" } = process.env;
 

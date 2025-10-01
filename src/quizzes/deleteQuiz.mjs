@@ -1,7 +1,8 @@
 import ddb from "../db/client.mjs";
 import { GetCommand, QueryCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
-import createError from "http-errors";
+import httpErrorHandler from "@middy/http-error-handler"
 import { withHttp } from "../utils/middy.mjs";
+import createError from "http-errors"
 
 const { TABLE_NAME } = process.env;
 

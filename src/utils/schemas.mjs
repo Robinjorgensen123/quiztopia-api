@@ -85,7 +85,7 @@ export const addQuestionSchema = {
     },
     body: {
       type: "object",
-      requred: ["question", "answer"],
+      required: ["question", "answer"],
       additionalProperties: false,
       properties: {
         question: { type: "string", minLength: 1, maxLength: 300 },
@@ -106,24 +106,26 @@ export const submitScoreSchema = {
         quizId: { type: "string", minLength: 1 },
       },
     },
-  },
-  body: {
-    type: "object",
-    required: ["answers"],
-    additionalProperties: false,
-    properties: {
-      answers: {
-        type: "array",
-        minItems: 1,
-        items: {
-          type: "object",
-          required: ["questionId", "value"],
-          additionalProperties: true,
-          properties: {
-            questionId: { type: ["string", "number", "boolean"] },
+    body: {
+      type: "object",
+      required: ["answers"],
+      additionalProperties: false,
+      properties: {
+        answers: {
+          type: "array",
+          minItems: 1,
+          items: {
+            type: "object",
+            required: ["questionId", "value"],
+            additionalProperties: true,
+            properties: {
+              questionId: { type: "string", minLength: 1 },
+              value: { type: ["string", "number", "boolean"] }
+            },
           },
         },
       },
     },
   },
 };
+

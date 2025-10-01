@@ -2,10 +2,11 @@ import ddb from "../db/client.mjs";
 import { PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import bcrypt from "bcryptjs";
 import crypto from "node:crypto";
-import createError from "http-errors";
+import httpErrorHandler from "@middy/http-error-handler";
 import { withHttp } from "../utils/middy.mjs";
 import { withSchema } from "../utils/validator.mjs";
 import { signupSchema } from "../utils/schemas.mjs";
+import createError from "http-errors"
 
 const { TABLE_NAME } = process.env;
 
