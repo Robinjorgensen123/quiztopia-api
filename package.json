@@ -25,6 +25,7 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "serverless-dotenv-plugin": "^6.0.0",
     "serverless-esbuild": "^1.55.1"
   }
 }
