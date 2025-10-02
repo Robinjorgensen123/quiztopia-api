@@ -15,8 +15,14 @@ const { TABLE_NAME } = process.env
 const createQuizHandler = async (event) => {
     if (!TABLE_NAME) throw createError(500, "Felkonfigurerad server")
 
-const userId = event?.requestContext?.authorizer?.lambda?.userId
-if(!userId) throw createError(401, "saknar eller ogiltig token")
+/* const userId = event.requestContext?.authorizer?.userId
+if(!userId) throw createError(401, "saknar eller ogiltig token") */
+const auth = event.requestContext?.authorizer;
+const userId = auth?.userId
+            ?? auth?.lambda?.userId
+            ?? auth?.claims?.sub
+            ?? null;
+    if(!userId) throw createError(401, "saknar eller ogiltig token")
 
 const { title, description } = event.body ?? {}
 const titleTrim = String(title).trim();

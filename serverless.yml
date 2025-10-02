@@ -14,7 +14,7 @@ provider:
     STAGE: ${self:provider.stage}
     REGION: ${self:provider.region}
     TABLE_NAME: Quiztopia
-    JWT_SECRET: ${env:JWT_SECRET, 'change-me-in-prod'}
+    JWT_SECRET: ${ssm:/quiztopia/${self:provider.stage}/JWT_SECRET}
     JWT_EXPIRES_IN: 10h
 
   httpApi:
@@ -26,6 +26,7 @@ provider:
         identitySource:
           - $request.header.Authorization
         resultTtlInSeconds: 0
+        enableSimpleResponses: true
 
   iam:
     role:

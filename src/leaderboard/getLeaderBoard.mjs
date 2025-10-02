@@ -19,7 +19,7 @@ const getLeaderboardHandler = async (event) => {
     Math.max(parseInt(qs.limit ?? "10", 10) || 10, 1),
     100
   );
-  const startKey = decodeToken(qs.nextToken);
+  const startKey = qs.nextToken ? decodeToken(qs.nextToken) : undefined;
 
   const res = await ddb.send(
     new QueryCommand({
@@ -35,9 +35,8 @@ const getLeaderboardHandler = async (event) => {
 
   const items = (res.Items ?? []).map((it) => ({
     userId: it.userId,
-    username: it.username ?? null,
-    totalPoints: it.totalPoints ?? it.GSI3SK ?? 0,
-    submittedAt: it.submittedAt ?? it.createdAt ?? null,
+    score: typeof it.score === `number` ? it.score : Number(it.GSI3SK ?? 0),
+    createdAt: it.createdAt ?? null,
   }));
   return {
     statusCode: 200,

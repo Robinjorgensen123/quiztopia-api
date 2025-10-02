@@ -5,8 +5,7 @@ import httpEventNormalizer from "@middy/http-event-normalizer";
 
 export const withHttp = (handler) =>
   middy(handler)
-    .use(httpJsonBodyParser())
+    .use(httpJsonBodyParser({ disableContentTypeError: true }))
     .use(httpEventNormalizer())
     .use(httpErrorHandler());
 
-    

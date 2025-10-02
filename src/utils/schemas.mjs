@@ -121,7 +121,13 @@ export const submitScoreSchema = {
             additionalProperties: true,
             properties: {
               questionId: { type: "string", minLength: 1 },
-              value: { type: ["string", "number", "boolean"] }
+              value: {
+                anyOf: [
+                  { type: "string" },
+                  { type: "number" },
+                  { type: "boolean" },
+                ],
+              },
             },
           },
         },
@@ -129,4 +135,3 @@ export const submitScoreSchema = {
     },
   },
 };
-
