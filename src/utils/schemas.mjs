@@ -135,3 +135,24 @@ export const submitScoreSchema = {
     },
   },
 };
+
+export const getLeaderboardSchema = {
+  type: "object",
+  properties: {
+    pathParameters: {
+      type: "object",
+      required: ["quizId"],
+      properties: {
+        quizId: { type: "string", minLength: 1 },
+      },
+    },
+    queryStringParameters: {
+      type: "object",
+      additionalProperties: true,
+      properties: {
+        limit: { type: "string" },
+        nextToken: { type: "string" },
+      },
+    },
+  },
+};
