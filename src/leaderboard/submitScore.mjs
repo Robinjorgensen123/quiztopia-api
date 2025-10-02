@@ -1,6 +1,5 @@
 import ddb from "../db/client.mjs"
 import { QueryCommand, PutCommand, GetCommand } from "@aws-sdk/lib-dynamodb"
-import httpErrorHandler from "@middy/http-error-handler"
 import { withHttp } from "../utils/middy.mjs"
 import { withSchema } from "../utils/validator.mjs"
 import { submitScoreSchema } from "../utils/schemas.mjs"

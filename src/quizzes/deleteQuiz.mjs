@@ -61,6 +61,9 @@ const deleteQuizHandler = async (event) => {
       )
     );
   }
-  return { statusCode: 204 };
+  return { 
+    statusCode: 200,
+    body: JSON.stringify({ message: "Quiz borttaget" })
+   };
 };
 export const handler = withHttp(deleteQuizHandler);
