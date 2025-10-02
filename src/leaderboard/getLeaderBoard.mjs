@@ -35,7 +35,7 @@ const getLeaderboardHandler = async (event) => {
   const items = (res.Items ?? []).map((it) => ({
     userId: it.userId,
     score: typeof it.score === `number` ? it.score : Number(it.GSI3SK ?? 0),
-    createdAt: it.createdAt ?? null,
+    createdAt: it.submittedAt ?? it.createdAt ?? null,
   }));
   return {
     statusCode: 200,
