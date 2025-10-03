@@ -39,7 +39,9 @@ const deleteQuizHandler = async (event) => {
   const items = all.Items ?? [];
 
   if (!items.length) {
-    return { statusCode: 204 };
+    return {statusCode: 200,
+    body: JSON.stringify({ message: "Quiz borttaget" })
+    }
   }
 
   const chunk = (arr, size) =>

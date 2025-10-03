@@ -21,7 +21,7 @@ const addQuestionHandler = async (event) => {
     const quizId = event?.pathParameters?.quizId;
     if(!quizId) throw createError(400, "quizId krävs")
 
-        const { question, answer, points = 0 } = event.body ?? {};
+        const { question, answer, points = 0, lat, lon } = event.body ?? {};
 
         const metaRes = await ddb.send(new GetCommand({
             TableName: TABLE_NAME,
@@ -47,6 +47,8 @@ const addQuestionHandler = async (event) => {
                 answer: String(answer),
                 points: Number(points) || 0,
                 createdAt: now,
+                lat: Number(lat),
+                lon: Number(lon),
             },
             ConditionExpression: "attribute_not_exists(PK) AND attribute_not_exists(SK)",
         }))
@@ -60,6 +62,8 @@ const addQuestionHandler = async (event) => {
                     question: String(question),
                     points: Number(points) || 0,
                     createdAt: now,
+                    lat: Number(lat),
+                    lon: Number(lon),
                 },
             }),
         }

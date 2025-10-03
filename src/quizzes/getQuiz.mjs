@@ -37,6 +37,8 @@ const getQuizHandler = async (event) => {
       question: q.question,
       points: q.points ?? 0,
       createdAt: q.createdAt ?? null,
+      lat: typeof q.lat === "number" ? q.lat : null,
+      lon: typeof q.lon === "number" ? q.lon : null,
     }));
   return {
     statusCode: 200,

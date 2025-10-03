@@ -86,12 +86,14 @@ export const addQuestionSchema = {
     },
     body: {
       type: "object",
-      required: ["question", "answer"],
+      required: ["question", "answer", "lat", "lon"],
       additionalProperties: false,
       properties: {
         question: { type: "string", minLength: 1, maxLength: 300 },
         answer: { type: "string", minLength: 1, maxLength: 300 },
         points: { type: "integer", minimum: 0 },
+        lat: { type: "number", minimum: -90, maximum: 90},
+        lon: { type: "number", minimum: -180, maximum: 180 },
       },
     },
   },

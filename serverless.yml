@@ -128,7 +128,7 @@ functions:
             name: quizAuth
 
   getLeaderboard:
-    handler: src/leaderboard/getLeaderBoard.handler
+    handler: src/leaderboard/getLeaderboard.handler
     events:
       - httpApi:
           path: /quizzes/{quizId}/leaderboard

@@ -50,7 +50,7 @@ export const loginHandler = async (event) => {
     {
         algorithm: "HS256",
         expiresIn: JWT_EXPIRES_IN || "10h",
-        subject: user.userId,
+        subject: String(userId),
     }
    )
 
