@@ -1,2 +1,4 @@
-JWT_SECRET=
+JWT_SECRET=please_change_me_to_a_random_secret
 JWT_EXPIRES_IN=10h
+REGION=eu-north-1
+TABLE_NAME=Quiztopia
