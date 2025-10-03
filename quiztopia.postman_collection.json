@@ -1,0 +1,278 @@
+{
+	"info": {
+		"_postman_id": "c1d1fc30-c394-49cd-a51c-0453153066a9",
+		"name": "quiztopia",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42372120"
+	},
+	"item": [
+		{
+			"name": "signup",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"abc123@gmail.com\",\r\n    \"username\": \"abc123\",\r\n    \"password\": \"abc123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://rhrt4gcff2.execute-api.eu-north-1.amazonaws.com/auth/signup",
+					"protocol": "https",
+					"host": [
+						"rhrt4gcff2",
+						"execute-api",
+						"eu-north-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"auth",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"abc123@gmail.com\",\r\n    \"password\": \"abc123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://rhrt4gcff2.execute-api.eu-north-1.amazonaws.com/auth/login",
+					"protocol": "https",
+					"host": [
+						"rhrt4gcff2",
+						"execute-api",
+						"eu-north-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create quiz",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://rhrt4gcff2.execute-api.eu-north-1.amazonaws.com/quizzes",
+					"protocol": "https",
+					"host": [
+						"rhrt4gcff2",
+						"execute-api",
+						"eu-north-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"quizzes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create question",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvYmpvcjg4QGdtYWlsLmNvbSIsInVzZXJuYW1lIjoicmoxMjMyMTMiLCJpYXQiOjE3NTkzOTY1MTQsImV4cCI6MTc1OTc1NjUxNCwic3ViIjoiYjcyMGE5OWYtOWI5OS00OTlmLWE1YzEtMTkwZGM0NTMxYmEyIn0.T8XosuzXi0Xh9Kd5GIxEHhj-CYPkDfDHaLjmskjQEQA",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"question\": \"vad är 2+2?\",\r\n    \"answer\": \"4\",\r\n    \"points\": 10\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://rhrt4gcff2.execute-api.eu-north-1.amazonaws.com/quizzes/626e01d1-d8e2-455a-a5f0-8356b6bab785/questions",
+					"protocol": "https",
+					"host": [
+						"rhrt4gcff2",
+						"execute-api",
+						"eu-north-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"quizzes",
+						"626e01d1-d8e2-455a-a5f0-8356b6bab785",
+						"questions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get quiz{id}",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://rhrt4gcff2.execute-api.eu-north-1.amazonaws.com/quizzes/{quizId}",
+					"protocol": "https",
+					"host": [
+						"rhrt4gcff2",
+						"execute-api",
+						"eu-north-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"quizzes",
+						"{quizId}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all quizzes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://rhrt4gcff2.execute-api.eu-north-1.amazonaws.com/quizzes",
+					"protocol": "https",
+					"host": [
+						"rhrt4gcff2",
+						"execute-api",
+						"eu-north-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"quizzes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post score",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvYmpvcjg4QGdtYWlsLmNvbSIsInVzZXJuYW1lIjoicmoxMjMyMTMiLCJpYXQiOjE3NTkzOTg2NzEsImV4cCI6MTc1OTc1ODY3MSwic3ViIjoiYjcyMGE5OWYtOWI5OS00OTlmLWE1YzEtMTkwZGM0NTMxYmEyIn0.AmOhq75ny8ifY1fNQMSl1Jy9e4Z6GswWyLYoygkwl-I",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"answers\": [\r\n    { \"questionId\": \"765ebba1-8a12-4f9c-9766-823812c5e219\", \"value\": \"4\" }\r\n  ]\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://rhrt4gcff2.execute-api.eu-north-1.amazonaws.com/quizzes/626e01d1-d8e2-455a-a5f0-8356b6bab785/scores",
+					"protocol": "https",
+					"host": [
+						"rhrt4gcff2",
+						"execute-api",
+						"eu-north-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"quizzes",
+						"626e01d1-d8e2-455a-a5f0-8356b6bab785",
+						"scores"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Leaderboard",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://rhrt4gcff2.execute-api.eu-north-1.amazonaws.com/quizzes/{quizId}/leaderboard",
+					"protocol": "https",
+					"host": [
+						"rhrt4gcff2",
+						"execute-api",
+						"eu-north-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"quizzes",
+						"{quizId}",
+						"leaderboard"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete quiz {id}",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://rhrt4gcff2.execute-api.eu-north-1.amazonaws.com/quizzes/{quizId}",
+					"protocol": "https",
+					"host": [
+						"rhrt4gcff2",
+						"execute-api",
+						"eu-north-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"quizzes",
+						"{quizId}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
